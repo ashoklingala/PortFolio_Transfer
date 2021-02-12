@@ -2,6 +2,10 @@ package in.novopay.portfolio.transfer;
 
 import java.math.BigDecimal;
 
+/**
+ * @author Ashok Lingala
+ *
+ */
 public class C40ExtractData {
 
 	public Long rbiClassification;

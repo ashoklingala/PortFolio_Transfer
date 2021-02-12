@@ -22,6 +22,10 @@ import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * @author Ashok
+ *
+ */
 @Component("generateC40Service")
 public class GenerateC40ScriptService {
 

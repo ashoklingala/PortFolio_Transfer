@@ -1,9 +1,11 @@
 package in.novopay.portfolio.transfer;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Date;
 
+/**
+ * @author Ashok Lingala
+ *
+ */
 public class LoanExcelImportData {
 
 	public Long officeId;

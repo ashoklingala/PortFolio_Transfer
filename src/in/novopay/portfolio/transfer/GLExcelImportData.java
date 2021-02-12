@@ -2,6 +2,10 @@ package in.novopay.portfolio.transfer;
 
 import java.math.BigDecimal;
 
+/**
+ * @author Ashok
+ *
+ */
 public class GLExcelImportData {
 	
 	private Long loanId;

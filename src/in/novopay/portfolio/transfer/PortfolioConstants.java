@@ -1,7 +1,9 @@
 package in.novopay.portfolio.transfer;
 
-import java.util.Date;
-
+/**
+ * @author Ashok Lingala
+ *
+ */
 public class PortfolioConstants {
 
 	public static final String ROOTDIRECTORY = "PortFolio_Transfer";
