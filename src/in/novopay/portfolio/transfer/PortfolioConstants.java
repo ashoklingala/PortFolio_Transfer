@@ -8,7 +8,7 @@ public class PortfolioConstants {
 
 	public static final String ROOTDIRECTORY = "PortFolio_Transfer";
 	
-	public static final int INTERBRANCHCONTROLACCOUNT_GLCODE = 80944;
+	public static final int INTERMEDIATE_ACCOUNT_GLCODE = 80944;
 	
 
 	public static final int GL15_LOANSANDADVANCES_GLCODE=44171;
@@ -36,7 +36,7 @@ public class PortfolioConstants {
 
 	public static final String LOAN_IMPORT_VALUES = " (`office_id`, `loan_id`, `closedon_date`, `account_no`, `loan_status`, `branch_code`, `profit_center`, `cost_center`, `natural_account`, `product_code`, `rbi_classification`, `inter_entity`, `source_code`, `spare1`, `spare2` ) VALUES(";
 	public static final String CLOSEING_QUERY = " ); ";
-	public static final String GL_IMPORT_VALUES = " (`loan_id`, `gl_id`, `office_id`, `balance`) VALUES(";
+	public static final String GL_IMPORT_VALUES = " (`loan_id`, `gl_id`, `office_id`, `balance`) VALUES(?, ?, ?, ?);";
 
 	public static final String BLANK_SPACES = " ";
 
@@ -89,13 +89,14 @@ public class PortfolioConstants {
 		return builder.toString();
 	}
 	
-	public static String getC40FetchQuery(String loanTableName, String glTableName) {
+	public static String getC40FetchQuery(String loanTableName, String glTableName, Long officeId) {
 		
 		StringBuilder builder = new StringBuilder();
 		builder.append(" SELECT loanTable.rbi_classification, loanTable.product_code, loanTable.profit_center, loanTable.cost_center, SUM(gl.balance) as balance, gl.gl_id FROM ")
-		.append(loanTableName).append(" loanTable JOIN ").append(glTableName).append(" gl ON gl.loan_id = loanTable.loan_id ")
+		.append(loanTableName).append(" loanTable JOIN ").append(glTableName).append(" gl ON gl.loan_id = loanTable.loan_id and gl.office_id= loanTable.office_id ")
+		.append( " where gl.office_id=").append(officeId)
 		.append( " GROUP BY loanTable.rbi_classification, loanTable.product_code, loanTable.profit_center, loanTable.cost_center, loanTable.office_id, gl.gl_id ORDER BY gl.gl_id ");
-		
+		System.out.println(builder.toString());
 		return builder.toString();
 		
 	}

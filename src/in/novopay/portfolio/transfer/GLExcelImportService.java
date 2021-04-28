@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +14,7 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -88,15 +91,15 @@ public class GLExcelImportService {
                 
                 //loanId
                 cell = row.getCell(colIndex++);
-                Long loanId = Long.valueOf(cell.toString());
+                Long loanId = Double.valueOf(cell.toString()).longValue();
                 
                 //GLId
                 cell = row.getCell(colIndex++);
-                Long glId = Long.valueOf(cell.toString());
+                Long glId = Double.valueOf(cell.toString()).longValue();
                 
                 //officeId
                 cell = row.getCell(colIndex++);
-                Long officeId = Long.valueOf(cell.toString());
+                Long officeId = Double.valueOf(cell.toString()).longValue();
                 
                 //Balance
                 cell = row.getCell(colIndex++);
@@ -130,25 +133,45 @@ public class GLExcelImportService {
          
          jdbcTemplate.execute(tableSchema);
          
-         for(GLExcelImportData glExcelData : glExcelDatas) {
-         	
-         	StringBuilder builder = new StringBuilder();
-         	builder.append(PortfolioConstants.INSERT_QUERY).append(tableName)
-         	.append(PortfolioConstants.GL_IMPORT_VALUES);
-         	
-         	// (`loan_id`, `gl_id`, `office_id`, `balance`) 
-         	
-         	builder.append(glExcelData.getLoanId()).append(commaSeparator)
-         	.append(glExcelData.getGlId()).append(commaSeparator)
-         	.append(glExcelData.getOfficeId()).append(commaSeparator)
-         	.append(glExcelData.getBalance()).append(PortfolioConstants.CLOSEING_QUERY);
-     
-         	jdbcTemplate.update(builder.toString());
-         }
+         System.out.println("GL Import started ...........");
          
-        
-		
+         saveBatch(glExcelDatas, tableName);
+         
+         System.out.println("GL Import done.");
+         
+	}
 	
+	public void saveBatch(final List<GLExcelImportData> employeeList, String tableName) {
 		
+	    final int batchSize = 500;	    
+	    
+		StringBuilder builder = new StringBuilder();
+     	builder.append(PortfolioConstants.INSERT_QUERY).append(tableName)
+     	.append(PortfolioConstants.GL_IMPORT_VALUES);
+     	
+     	
+	    for (int j = 0; j < employeeList.size(); j += batchSize) {
+
+	        final List<GLExcelImportData> batchList = employeeList.subList(j, j + batchSize > employeeList.size() ? employeeList.size() : j + batchSize);
+
+	        jdbcTemplate.batchUpdate( builder.toString(),
+	        		new BatchPreparedStatementSetter() {
+                public void setValues(PreparedStatement ps, int i)
+                        throws SQLException {
+                	GLExcelImportData employee = batchList.get(i);
+                    ps.setLong(1, employee.getLoanId());
+                    ps.setLong(2, employee.getGlId());
+                    ps.setLong(3, employee.getOfficeId());
+                    ps.setBigDecimal(4, employee.getBalance());
+                    
+                }
+
+                public int getBatchSize() {
+                    return batchList.size();
+                }
+            });
+	           
+
+	    }
 	}
 }

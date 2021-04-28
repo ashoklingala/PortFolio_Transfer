@@ -85,11 +85,11 @@ public class LoanExcelImportService {
                 
                 //officeId
                 cell = row.getCell(colIndex++);
-                Long officeId = Long.valueOf(cell.toString());
+                Long officeId = Double.valueOf(cell.toString()).longValue();
                 
                 //loanId
                 cell = row.getCell(colIndex++);
-                Long loanId = Long.valueOf(cell.toString());
+                Long loanId = Double.valueOf(cell.toString()).longValue();
                 
                 //closedDate
                 cell = row.getCell(colIndex++);
@@ -104,22 +104,25 @@ public class LoanExcelImportService {
                 
                 //loanStatus
                 cell = row.getCell(colIndex++);
-                Long loanStatus = Long.valueOf(cell.toString());
+                Long loanStatus = Double.valueOf(cell.toString()).longValue();
                 
                 //BranchCode
                 Long branchCode = null;
                 cell = row.getCell(colIndex++);
-                if(cell != null) {
-                	branchCode = Long.valueOf(cell.toString());
+                if(cell != null && !(cell.getCellType() == Cell.CELL_TYPE_BLANK)) {
+                	if(!cell.toString().equals(" ")) {
+                		branchCode = Double.valueOf(cell.toString()).longValue();
+                	}
+                	
                 }
                  
                 //profitCenter
                 cell = row.getCell(colIndex++);
-                Long profitCenter = Long.valueOf(cell.toString());
+                Long profitCenter = Double.valueOf(cell.toString()).longValue();
                 
                 //costCenter
                 cell = row.getCell(colIndex++);
-                Long costCenter = Long.valueOf(cell.toString());
+                Long costCenter = Double.valueOf(cell.toString()).longValue();
                 
                 //naturalAccount
                 Long naturalAccount= null;
@@ -127,32 +130,32 @@ public class LoanExcelImportService {
                 if(cell != null && !(cell.getCellType() == Cell.CELL_TYPE_BLANK)) {
                 	String val = cell.toString();
                 	if(!val.isEmpty() && !val.isEmpty() && !val.equalsIgnoreCase(" "))
-                	naturalAccount = Long.valueOf(cell.toString());
+                	naturalAccount = Double.valueOf(cell.toString()).longValue();
                 }
                 
                 //productCode
                 cell = row.getCell(colIndex++);
-                Long productCode = Long.valueOf(cell.toString());
+                Long productCode = Double.valueOf(cell.toString()).longValue();
                 
                 // RBI Classification
                 cell = row.getCell(colIndex++);
-                Long rbiClassification = Long.valueOf(cell.toString());
+                Long rbiClassification = Double.valueOf(cell.toString()).longValue();
                 
                 //Inter Entity
                 cell = row.getCell(colIndex++);
-                Long interEntity = Long.valueOf(cell.toString());
+                Long interEntity = Double.valueOf(cell.toString()).longValue();
               
                 //Source Code
                 cell = row.getCell(colIndex++);
-                Long sourceCode = Long.valueOf(cell.toString());
+                Long sourceCode = Double.valueOf(cell.toString()).longValue();
                 
                 //spare1
                 cell = row.getCell(colIndex++);
-                Long spare1 = Long.valueOf(cell.toString());
+                Long spare1 = Double.valueOf(cell.toString()).longValue();
                 
                 //Spare2
                 cell = row.getCell(colIndex++);
-                Long spare2 = Long.valueOf(cell.toString());
+                Long spare2 = Double.valueOf(cell.toString()).longValue();
               
                 LoanExcelImportData excelData = LoanExcelImportData.instance(officeId, loanId, closedDate, accountNo, loanStatus, branchCode, profitCenter, costCenter, naturalAccount, 
                 		productCode, rbiClassification, interEntity, sourceCode, spare1, spare2);
