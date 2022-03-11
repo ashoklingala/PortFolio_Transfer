@@ -79,11 +79,11 @@ public class GLExcelImportService {
             
             List<GLExcelImportData> glExcelDatas = new ArrayList<GLExcelImportData>();
             
-            for( short rowIndex = 1; rowIndex <= rowNum; rowIndex++ ) {
+            for( int rowIndex = 1; rowIndex <= rowNum; rowIndex++ ) {
                 
                 row = sheet.getRow(rowIndex);
 
-                short colIndex = 0;
+                int colIndex = 0;
 
                 //
                 if(row == null )
@@ -109,7 +109,7 @@ public class GLExcelImportService {
                 
                 glExcelDatas.add(excelData);
             }
-            
+            System.out.println(glExcelDatas.size());
             processGLAccountImports(glExcelDatas);
            
         
@@ -143,7 +143,7 @@ public class GLExcelImportService {
 	
 	public void saveBatch(final List<GLExcelImportData> employeeList, String tableName) {
 		
-	    final int batchSize = 500;	    
+	    final int batchSize = 2000;	    
 	    
 		StringBuilder builder = new StringBuilder();
      	builder.append(PortfolioConstants.INSERT_QUERY).append(tableName)

@@ -95,7 +95,12 @@ public class LoanExcelImportService {
                 cell = row.getCell(colIndex++);
                 Date closedDate = null;
                 if(cell != null && !(cell.getCellType() == Cell.CELL_TYPE_BLANK)) {
-                	closedDate = cell.getDateCellValue();
+                	try {
+                		closedDate = cell.getDateCellValue();
+                	} catch (Exception e) {
+						// TODO: handle exception
+					}
+                	
                 }
                 
                 //AccountNo
