@@ -143,7 +143,7 @@ public class GLExcelImportService {
 	
 	public void saveBatch(final List<GLExcelImportData> employeeList, String tableName) {
 		
-	    final int batchSize = 2000;	    
+	    final int batchSize = 500;	    
 	    
 		StringBuilder builder = new StringBuilder();
      	builder.append(PortfolioConstants.INSERT_QUERY).append(tableName)
