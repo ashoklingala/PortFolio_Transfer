@@ -189,33 +189,58 @@ public class LoanExcelImportService {
          
          jdbcTemplate.execute(tableSchema);
          
-         for(LoanExcelImportData loanImportData : loanExcelDatas) {
-         	
-         	StringBuilder builder = new StringBuilder();
-         	builder.append(PortfolioConstants.INSERT_QUERY).append(tableName)
-         	.append(PortfolioConstants.LOAN_IMPORT_VALUES);
-         	
-         	builder.append(loanImportData.getOfficeId()).append(commaSeparator)
-         	.append(loanImportData.getLoanId()).append(commaSeparator)
-         	.append(loanImportData.getClosedDate()).append(commaSeparator).append("'")
-         	.append(loanImportData.getAccountNo()).append("'").append(commaSeparator)
-         	.append(loanImportData.getLoanStatus()).append(commaSeparator)
-         	.append(loanImportData.getBranchCode()).append(commaSeparator)
-         	.append(loanImportData.getProfitCenter()).append(commaSeparator)
-         	.append(loanImportData.getCostCenter()).append(commaSeparator)
-         	.append(loanImportData.getNaturalAccount()).append(commaSeparator)
-         	.append(loanImportData.getProductCode()).append(commaSeparator)
-         	.append(loanImportData.getRbiClassification()).append(commaSeparator)
-         	.append(loanImportData.getInterEntity()).append(commaSeparator)
-         	.append(loanImportData.getSourceCode()).append(commaSeparator)
-         	.append(loanImportData.getSpare1()).append(commaSeparator)
-         	.append(loanImportData.getSpare2()).append(PortfolioConstants.CLOSEING_QUERY);
-     
-         	jdbcTemplate.update(builder.toString());
-         }
+         int recordsCount = loanExcelDatas.size();
          
-        
-		
+         int batchSize = 500;
+         
+         int loopCount = recordsCount/batchSize == 0 ? 1: recordsCount/batchSize;
+         
+         int fromIndex=0;
+         int toIndex = batchSize;
+         
+         for(int i=0; i< loopCount; i++) {
+        	 
+        	 if(i == loopCount -1) {
+        		 toIndex = recordsCount;
+        	 }
+        	 List<LoanExcelImportData> safeSublist = loanExcelDatas.subList(fromIndex, toIndex);
+        	 insertData(safeSublist, tableName, commaSeparator);
+        	 
+        	 if(toIndex >= recordsCount) {
+        		 break;
+        	 }
+        	 
+        	 fromIndex = toIndex;
+        	 toIndex = toIndex + batchSize;
+         }
+	}
+	
+	private void insertData(List<LoanExcelImportData> loanExcelDatas, String tableName, String commaSeparator) {
+		 
+		for(LoanExcelImportData loanImportData : loanExcelDatas) {
+	         	
+	         	StringBuilder builder = new StringBuilder();
+	         	builder.append(PortfolioConstants.INSERT_QUERY).append(tableName)
+	         	.append(PortfolioConstants.LOAN_IMPORT_VALUES);
+	         	
+	         	builder.append(loanImportData.getOfficeId()).append(commaSeparator)
+	         	.append(loanImportData.getLoanId()).append(commaSeparator)
+	         	.append(loanImportData.getClosedDate()).append(commaSeparator).append("'")
+	         	.append(loanImportData.getAccountNo()).append("'").append(commaSeparator)
+	         	.append(loanImportData.getLoanStatus()).append(commaSeparator)
+	         	.append(loanImportData.getBranchCode()).append(commaSeparator)
+	         	.append(loanImportData.getProfitCenter()).append(commaSeparator)
+	         	.append(loanImportData.getCostCenter()).append(commaSeparator)
+	         	.append(loanImportData.getNaturalAccount()).append(commaSeparator)
+	         	.append(loanImportData.getProductCode()).append(commaSeparator)
+	         	.append(loanImportData.getRbiClassification()).append(commaSeparator)
+	         	.append(loanImportData.getInterEntity()).append(commaSeparator)
+	         	.append(loanImportData.getSourceCode()).append(commaSeparator)
+	         	.append(loanImportData.getSpare1()).append(commaSeparator)
+	         	.append(loanImportData.getSpare2()).append(PortfolioConstants.CLOSEING_QUERY);
+	     
+	         	jdbcTemplate.update(builder.toString());
+	         }
 	}
 
 	
