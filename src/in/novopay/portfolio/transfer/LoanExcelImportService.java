@@ -13,6 +13,7 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +41,10 @@ public class LoanExcelImportService {
 	@Value("${foo.tablenames.suffix}")
 	private String tableNameSuffix;
 	
+	@Value("${foo.account.batchsize}")
+	private int batchSize;
+	
+	
 	private JdbcTemplate jdbcTemplate;
 	
 	
@@ -58,6 +63,7 @@ public class LoanExcelImportService {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 	
+	
 	public void processLoanAccountExcelData() {
 		XSSFWorkbook wb;
         try {
@@ -73,11 +79,11 @@ public class LoanExcelImportService {
             
             List<LoanExcelImportData> loanExcelDatas = new ArrayList<LoanExcelImportData>();
             
-            for( short rowIndex = 1; rowIndex <= rowNum; rowIndex++ ) {
+            for( int rowIndex = 1; rowIndex <= rowNum; rowIndex++ ) {
                 
                 row = sheet.getRow(rowIndex);
 
-                short colIndex = 0;
+                int colIndex = 0;
 
                 //
                 if(row == null )
@@ -168,8 +174,9 @@ public class LoanExcelImportService {
                 loanExcelDatas.add(excelData);
             }
             
+            System.out.println("Reading from Excel Done");
             processLoanAccountImports(loanExcelDatas);
-           
+            System.out.println("processing from Excel Done");
         
         }  catch (IOException ioe) {
             // TODO Auto-generated catch block
@@ -191,21 +198,22 @@ public class LoanExcelImportService {
          
          int recordsCount = loanExcelDatas.size();
          
-         int batchSize = 500;
-         
          int loopCount = recordsCount/batchSize == 0 ? 1: recordsCount/batchSize;
          
          int fromIndex=0;
          int toIndex = batchSize;
          
+         System.out.println("loop count" + loopCount + " and recordsCount:" + recordsCount);
          for(int i=0; i< loopCount; i++) {
         	 
         	 if(i == loopCount -1) {
         		 toIndex = recordsCount;
         	 }
+        	 
+        	 System.out.println(" Insert data loop count =" + i);
         	 List<LoanExcelImportData> safeSublist = loanExcelDatas.subList(fromIndex, toIndex);
         	 insertData(safeSublist, tableName, commaSeparator);
-        	 
+        	 System.out.println(" Insert data loop count =" + i + " completed");
         	 if(toIndex >= recordsCount) {
         		 break;
         	 }
@@ -217,12 +225,14 @@ public class LoanExcelImportService {
 	
 	private void insertData(List<LoanExcelImportData> loanExcelDatas, String tableName, String commaSeparator) {
 		 
+		StringBuilder builder = new StringBuilder();
+     	builder.append(PortfolioConstants.INSERT_QUERY).append(tableName)
+     	.append(PortfolioConstants.LOAN_IMPORT_VALUES);
+     	
+     	int count = 0;
+     	int size = loanExcelDatas.size();
 		for(LoanExcelImportData loanImportData : loanExcelDatas) {
-	         	
-	         	StringBuilder builder = new StringBuilder();
-	         	builder.append(PortfolioConstants.INSERT_QUERY).append(tableName)
-	         	.append(PortfolioConstants.LOAN_IMPORT_VALUES);
-	         	
+	         	count = count + 1;
 	         	builder.append(loanImportData.getOfficeId()).append(commaSeparator)
 	         	.append(loanImportData.getLoanId()).append(commaSeparator)
 	         	.append(loanImportData.getClosedDate()).append(commaSeparator).append("'")
@@ -237,10 +247,15 @@ public class LoanExcelImportService {
 	         	.append(loanImportData.getInterEntity()).append(commaSeparator)
 	         	.append(loanImportData.getSourceCode()).append(commaSeparator)
 	         	.append(loanImportData.getSpare1()).append(commaSeparator)
-	         	.append(loanImportData.getSpare2()).append(PortfolioConstants.CLOSEING_QUERY);
-	     
-	         	jdbcTemplate.update(builder.toString());
-	         }
+	         	.append(loanImportData.getSpare2());
+	         	
+	         	if(size != count) {
+	         		builder.append(PortfolioConstants.APPENDING_QUERY);
+	         	} else {
+	         		builder.append(PortfolioConstants.CLOSEING_QUERY);
+	         	}
+		}
+		jdbcTemplate.batchUpdate(builder.toString());
 	}
 
 	

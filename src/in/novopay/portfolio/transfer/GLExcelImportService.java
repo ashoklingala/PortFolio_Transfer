@@ -14,6 +14,7 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -42,8 +43,13 @@ public class GLExcelImportService {
 	@Value("${foo.tablenames.suffix}")
 	private String tableNameSuffix;
 	
+	@Value("${foo.gl.batchsize}")
+	private int batchSize;
+	
 	
 	private JdbcTemplate jdbcTemplate;
+
+	private ClassPathXmlApplicationContext context;
 	
 	
 	public String getFilesLocation() {
@@ -133,45 +139,65 @@ public class GLExcelImportService {
          
          jdbcTemplate.execute(tableSchema);
          
-         System.out.println("GL Import started ...........");
-         
          saveBatch(glExcelDatas, tableName);
          
          System.out.println("GL Import done.");
          
 	}
 	
-	public void saveBatch(final List<GLExcelImportData> employeeList, String tableName) {
-		
-	    final int batchSize = 500;	    
+	public void saveBatch(final List<GLExcelImportData> glExcelImportDatas, String tableName) {  
 	    
 		StringBuilder builder = new StringBuilder();
      	builder.append(PortfolioConstants.INSERT_QUERY).append(tableName)
      	.append(PortfolioConstants.GL_IMPORT_VALUES);
      	
+     	int recordsCount = glExcelImportDatas.size();
+        
+        int loopCount = recordsCount/batchSize == 0 ? 1: recordsCount/batchSize;
+        
+        int fromIndex=0;
+        int toIndex = batchSize;
+        
+     	System.out.println("loop count" + loopCount + " and recordsCount:" + recordsCount);
      	
-	    for (int j = 0; j < employeeList.size(); j += batchSize) {
+     	
+	    for (int j = 0; j < loopCount; j++) {
 
-	        final List<GLExcelImportData> batchList = employeeList.subList(j, j + batchSize > employeeList.size() ? employeeList.size() : j + batchSize);
+	    	 if(j == loopCount -1) {
+        		 toIndex = recordsCount;
+        	 }
+        	 
+	    	 System.out.println(" Insert data loop count =" + j);
+	    	 
+        	 final List<GLExcelImportData> safeSublist = glExcelImportDatas.subList(fromIndex, toIndex);
+        	 
+        	 jdbcTemplate.batchUpdate( builder.toString(),
+ 	        		new BatchPreparedStatementSetter() {
+                 public void setValues(PreparedStatement ps, int i)
+                         throws SQLException {
+                 	GLExcelImportData employee = safeSublist.get(i);
+                     ps.setLong(1, employee.getLoanId());
+                     ps.setLong(2, employee.getGlId());
+                     ps.setLong(3, employee.getOfficeId());
+                     ps.setBigDecimal(4, employee.getBalance());
+                     
+                 }
 
-	        jdbcTemplate.batchUpdate( builder.toString(),
-	        		new BatchPreparedStatementSetter() {
-                public void setValues(PreparedStatement ps, int i)
-                        throws SQLException {
-                	GLExcelImportData employee = batchList.get(i);
-                    ps.setLong(1, employee.getLoanId());
-                    ps.setLong(2, employee.getGlId());
-                    ps.setLong(3, employee.getOfficeId());
-                    ps.setBigDecimal(4, employee.getBalance());
-                    
-                }
-
-                public int getBatchSize() {
-                    return batchList.size();
-                }
-            });
-	           
-
+                 public int getBatchSize() {
+                     return safeSublist.size();
+                 }
+             });
+        	 
+        	 
+        	 System.out.println(" Insert data loop count =" + j + " completed");
+        	 
+        	 if(toIndex >= recordsCount) {
+        		 break;
+        	 }
+        	 
+        	 fromIndex = toIndex;
+        	 toIndex = toIndex + batchSize;
+	    	 
 	    }
 	}
 }

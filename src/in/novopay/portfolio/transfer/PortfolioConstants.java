@@ -36,6 +36,7 @@ public class PortfolioConstants {
 
 	public static final String LOAN_IMPORT_VALUES = " (`office_id`, `loan_id`, `closedon_date`, `account_no`, `loan_status`, `branch_code`, `profit_center`, `cost_center`, `natural_account`, `product_code`, `rbi_classification`, `inter_entity`, `source_code`, `spare1`, `spare2` ) VALUES(";
 	public static final String CLOSEING_QUERY = " ); ";
+	public static final String APPENDING_QUERY = " ), (";
 	public static final String GL_IMPORT_VALUES = " (`loan_id`, `gl_id`, `office_id`, `balance`) VALUES(?, ?, ?, ?);";
 
 	public static final String BLANK_SPACES = " ";

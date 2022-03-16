@@ -31,8 +31,6 @@ public class PortFolioTransferMainApp {
 		generateC40ScriptService.setJdbcTemplate(jdbcTemplate);
 		generateC40ScriptService.processC40Scripts();
 	
-		 
-		
 		context.close();
 	}
 
