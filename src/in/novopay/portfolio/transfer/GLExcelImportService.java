@@ -1,8 +1,11 @@
 package in.novopay.portfolio.transfer;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -200,4 +203,48 @@ public class GLExcelImportService {
 	    	 
 	    }
 	}
+	
+	
+	public void processGLAccountExcelDatawithCsv()  
+	{  
+		String line = "";  
+		String splitBy = ","; 
+		BufferedReader br = null;
+		List<GLExcelImportData> glExcelDatas = new ArrayList<GLExcelImportData>();
+		try {  
+			//parsing a CSV file into BufferedReader class constructor  
+			File file = new File(getFilesLocation()); // creating a new file instance
+			br = new BufferedReader(new FileReader(file));  
+			br.readLine();
+			while ((line = br.readLine()) != null)   //returns a Boolean value  
+			{  
+				String[] employee = line.split(splitBy);    // use comma as separator  
+				GLExcelImportData excelData = GLExcelImportData.instance(employee[0], employee[1], employee[2], employee[3]);
+				glExcelDatas.add(excelData);
+			}  
+//			String line = br.readLine();
+//			br.lines().parallel().forEach(value -> {
+//				String[] employee = value.split(splitBy);    // use comma as separator  
+//				GLExcelImportData excelData = GLExcelImportData.instance(employee[0], employee[1], employee[2], employee[3]);
+//				glExcelDatas.add(excelData);
+//			});
+			
+			System.out.println("total GL import count is : " + glExcelDatas.size());
+            processGLAccountImports(glExcelDatas);
+            System.out.println("saving into the GL table completed");
+		}   
+		catch (IOException e)   
+		{  
+			e.printStackTrace();  
+		} finally {
+			try {
+				if(null != br) {
+					br.close();
+				}
+					
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} 
+	}  
 }

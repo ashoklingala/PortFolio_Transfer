@@ -24,7 +24,7 @@ public class PortFolioTransferMainApp {
 		// Import GLData
 		GLExcelImportService glExcelImportService = (GLExcelImportService) context.getBean("glExcelImport");
 		glExcelImportService.setJdbcTemplate(jdbcTemplate);
-		glExcelImportService.processGLAccountExcelData();
+		glExcelImportService.processGLAccountExcelDatawithCsv();
 		
 		//Proces C-40 scripts
 		GenerateC40ScriptService generateC40ScriptService = (GenerateC40ScriptService) context.getBean("generateC40Service");

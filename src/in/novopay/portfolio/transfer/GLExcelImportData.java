@@ -41,5 +41,9 @@ public class GLExcelImportData {
 	public BigDecimal getBalance() {
 		return balance;
 	}
+
+	public static GLExcelImportData instance(String loanIdString, String glIdString, String officeIdString, String balanceString) {
+		return instance(Long.parseLong(loanIdString), Long.parseLong(glIdString), Long.parseLong(officeIdString), new BigDecimal(balanceString));
+	}
 	
 }
