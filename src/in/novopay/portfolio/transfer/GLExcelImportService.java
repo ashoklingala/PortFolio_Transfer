@@ -136,9 +136,9 @@ public class GLExcelImportService {
 		String commaSeparator = ", ";
 		 String tableName = PortfolioConstants.getGlTableName(Long.valueOf(sourceOfficeId), tableNameSuffix);
          
-         jdbcTemplate.execute("DROP TABLE IF EXISTS " + tableName);
+		 jdbcTemplate.execute("DROP TABLE IF EXISTS " + tableName);
          
-         String tableSchema = PortfolioConstants.getGLImportTableScript(Long.valueOf(sourceOfficeId), tableNameSuffix);
+        String tableSchema = PortfolioConstants.getGLImportTableScript(Long.valueOf(sourceOfficeId), tableNameSuffix);
          
          jdbcTemplate.execute(tableSchema);
          

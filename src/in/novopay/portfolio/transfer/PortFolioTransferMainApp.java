@@ -16,7 +16,7 @@ public class PortFolioTransferMainApp {
 	    
 		JdbcTemplate jdbcTemplate = (JdbcTemplate) context.getBean("jdbcTemplate");
 		
-		 //Import LoanData
+		// Import LoanData
 		LoanExcelImportService loanExcelImportService = (LoanExcelImportService) context.getBean("loanExcelImport");
 		loanExcelImportService.setJdbcTemplate(jdbcTemplate);
 		loanExcelImportService.processLoanAccountExcelData();
@@ -24,9 +24,9 @@ public class PortFolioTransferMainApp {
 		// Import GLData
 		GLExcelImportService glExcelImportService = (GLExcelImportService) context.getBean("glExcelImport");
 		glExcelImportService.setJdbcTemplate(jdbcTemplate);
-		glExcelImportService.processGLAccountExcelDatawithCsv();
+		glExcelImportService.processGLAccountExcelData();
 		
-		//Proces C-40 scripts
+		// Proces C-40 scripts
 		GenerateC40ScriptService generateC40ScriptService = (GenerateC40ScriptService) context.getBean("generateC40Service");
 		generateC40ScriptService.setJdbcTemplate(jdbcTemplate);
 		generateC40ScriptService.processC40Scripts();

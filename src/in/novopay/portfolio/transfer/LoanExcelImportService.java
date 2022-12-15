@@ -190,11 +190,11 @@ public class LoanExcelImportService {
 		String commaSeparator = ", ";
 		 String tableName = PortfolioConstants.getLoanTableName(Long.valueOf(sourceOfficeId), tableNameSuffix);
          
-         jdbcTemplate.execute("DROP TABLE IF EXISTS " + tableName);
+        jdbcTemplate.execute("DROP TABLE IF EXISTS " + tableName);
          
          String tableSchema = PortfolioConstants.getLoanImportTableScript(Long.valueOf(sourceOfficeId), tableNameSuffix);
          
-         jdbcTemplate.execute(tableSchema);
+        jdbcTemplate.execute(tableSchema);
          
          int recordsCount = loanExcelDatas.size();
          
